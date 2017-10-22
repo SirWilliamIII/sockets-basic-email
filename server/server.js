@@ -1,10 +1,10 @@
-const path = require('path'),
-      http = require('http'),
-      express = require('express'),
+const path     = require('path'),
+      http     = require('http'),
+      express  = require('express'),
       socketIO = require('socket.io')
 
 const publicPath = path.join(__dirname, '../public')
-const port = process.env.PORT || 4444
+const port = process.env.PORT || 8000
 
 const app = express()
 const server = http.createServer(app)
@@ -15,13 +15,21 @@ app.use(express.static(publicPath))
 
 io.on('connection', socket => {
 	console.log('New User Connected ')
-})
 
-io.on('disconnect', socket => {
-  console.log('User Disconnected')
-})
+	socket.emit('newEmail', {
+		from: 'jim@ex.com',
+		text: 'Yo yo yo yo yo'
+	})
 
+	socket.on('createEmail', newEmail => {
+		console.log('create email', newEmail)
+	})
+
+	socket.on('disconnect', function () {
+		console.log('User Disconnected')
+	})
+})
 
 server.listen(port, () => {
-  console.log(`Server is up on ${port}`)
+	console.log(`Server is up on ${port}`)
 })
